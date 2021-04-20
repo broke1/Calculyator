@@ -97,6 +97,7 @@
           </div> -->
           <v-slider
             v-model="bitcoinValue"
+            class="calc-slider"
             max="100000"
             min="0"
             step="1000" 
@@ -118,6 +119,10 @@
               {{ item.label }}
             </div>
           </div>
+          <div 
+            class="current-tick" 
+            :style="{left: `${bitcoinTooltipPosCurr}%`}"
+          />
         </div>
         <div class="calc-header slide-header"> 
           <span>Hours per day your Heatbit is in use</span>
@@ -277,6 +282,7 @@ export default {
     return {
       bitcoinValue: 55000,
       bitcoinTooltipPos: 1,
+      bitcoinTooltipPosCurr: 1,
       bitCoinTicksLabels: [
         {label: "0",left: 0},
         {label: "20k",left: 19},
@@ -332,15 +338,15 @@ export default {
     }
   },
   watch: {
-    bitcoinValue: function (val) {
-      this.moveTooltip(val,100000,'bitCoin')
-    },
-    hoyrsPerDay: function (val) {
-      this.moveTooltip(val,24,'perDay')
-    },
-    priceElec: function (val) {
-      this.moveTooltip(val,0.40,'priceElec')
-    },
+    // bitcoinValue: function (val) {
+    //   this.moveTooltip(val,100000,'bitCoin')
+    // },
+    // hoyrsPerDay: function (val) {
+    //   this.moveTooltip(val,24,'perDay')
+    // },
+    // priceElec: function (val) {
+    //   this.moveTooltip(val,0.40,'priceElec')
+    // },
     earnings: function () {
       this.setDiscHeat()
       this.setEarningsTop()
@@ -403,19 +409,36 @@ export default {
       return beatytime
     },
     moveTooltip: function(val,max,elem) {
-      let procent =  ((val*100)/max)
-      if (procent > 15 && procent < 50) {
-        procent = procent-0.8
-      } else if (procent >= 50 && procent < 80) {
-        procent = procent-1.8
-      } else if (procent >= 80) {
-        procent = procent-2.2
-      } 
+      let procent =  ((val*100)/max)-0.8
+
+    
+      // if (procent > 15 && procent < 50) {
+      //   procent = procent-0.8
+      // } else if (procent >= 50 && procent < 80) {
+      //   procent = procent-1.8
+      // } else if (procent >= 80) {
+      //   procent = procent-2.2
+      // } 
+
+      
       // if (procent == 0) {
       //   procent = 1
       // } else if(procent == 100) {
       //   procent = 99
       // }
+
+      if (screen.width <= 640) {
+        procent = procent - 0.2
+      } 
+      if (screen.width <= 480) {
+        procent = procent - 0.7
+      }
+      if (screen.width <= 320) {
+        procent = procent - 1
+      }
+
+      
+
       switch(elem){
       case"bitCoin":
         this.bitcoinTooltipPos = procent
@@ -425,6 +448,9 @@ export default {
         break
       case"priceElec":
         this.priceElecTooltipPos = procent
+        break
+      case "bitCoinCurr":
+        this.bitcoinTooltipPosCurr = procent
         break
       
       }
@@ -439,6 +465,7 @@ export default {
       if (response.status == 200) { 
         await response.json().then( res => { 
           this.bitcoinValue  = res.BTC
+          this.moveTooltip(res.BTC,100000,'bitCoinCurr')
           this.setEarnings()
         }).catch( error => {
           console.log(error)
@@ -483,6 +510,10 @@ export default {
     })
     document.querySelectorAll('.v-slider__track-container').forEach( item => {
       item.style.height = '4px'
+      item.style.zIndex = '1'
+    })
+    document.querySelectorAll('.v-slider__thumb-container').forEach( item => {
+      item.style.zIndex = '3'
     })
     document.querySelectorAll('.v-slider__thumb').forEach( item => {
       item.style.width = "16px"

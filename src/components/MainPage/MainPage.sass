@@ -27,7 +27,6 @@
   font-style: normal
 
 
-
 .v-slider__thumb::before
     display: none
 
@@ -109,11 +108,7 @@
 
         .calc-slider
           position: relative
-
-          input
-            position: relative
-            width: 100%
-            z-index: 2
+          
 
             // &::-moz-range-thumb 
             //   background: $black
@@ -175,6 +170,29 @@
             //   bottom: -12px
             //   left: 50%
             //   transform: translateX(-50%)
+
+        .current-tick 
+          background: linear-gradient(90deg, #F15A24 0.01%, #ED2F24 100.04%)
+          border-color: #ED2F24
+          width: 16px
+          height: 16px
+          border-radius: 50%
+          position: absolute
+          top: 8px
+          z-index: 2
+
+          &:before
+            content: 'current price'
+            position: absolute
+            top: -25px
+            left: 50%
+            transform: translateX(-50%)
+            font-family: "Gilroy"
+            font-size: 18px
+            line-height: 20px
+            color: $black
+            white-space: nowrap
+
 
         .custom-ticks
           width: 100%
