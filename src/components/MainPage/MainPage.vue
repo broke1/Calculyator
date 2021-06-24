@@ -335,6 +335,7 @@ export default {
       costElectricity: 0,
       discHeat: 0,
       earningsTop: 0,
+      hashRateValue: 1000,
     }
   },
   watch: {
@@ -358,7 +359,7 @@ export default {
   },
   methods: {
     setEarnings: function () {
-      this.earnings = 14/154000000*24*6*6.25*this.bitcoinValue*this.beatyTimePeriod(this.timePeriod)*this.hoyrsPerDay/24
+      this.earnings = 14/this.hashRateValue*24*6*6.25*this.bitcoinValue*this.beatyTimePeriod(this.timePeriod)*this.hoyrsPerDay/24
     },
     setCostElectricity: function () {
       this.costElectricity = 1.3*this.hoyrsPerDay*this.beatyTimePeriod(this.timePeriod)*this.priceElec
@@ -472,6 +473,22 @@ export default {
         }) 
       }  
     },
+    getHashRate: async function() {
+      let response = await fetch(`https://blockchain.info/q/hashrate`, {
+        //mode: 'cors',
+      })
+        .catch (error => {
+          console.log(error)
+        }) 
+      if (response.status == 200) { 
+        await response.json().then( res => { 
+          this.hashRateValue  = Math.round(res/1000)
+          this.setEarnings()
+        }).catch( error => {
+          console.log(error)
+        }) 
+      }  
+    },
     setColor: function() {
       setTimeout( () => {
         document.querySelectorAll('.v-list-item').forEach( item => {
@@ -489,6 +506,7 @@ export default {
     this.hoyrsPerDay = 24
     this.priceElec = 0.10
     this.getBitCoin()
+    this.getHashRate()
     if (screen.width < 500) {
       this.mobile = true
     }
